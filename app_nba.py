@@ -75,14 +75,31 @@ h1, h2, h3 { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; }
 
 # ── Module imports ──────────────────────────────────────────────────────────
 try:
-    from nba_fetcher   import fetch_all as fetch_nba_data, fetch_todays_games
+    from nba_fetcher    import fetch_all as fetch_nba_data, fetch_todays_games
     from player_fetcher import fetch_all_player_data, fetch_injury_report
-    from nba_model     import load_data, project_game
-    from odds_fetcher  import fetch_vegas_lines, match_vegas_to_game
+    from nba_model      import load_data, project_game
     MODULES_OK = True
 except ImportError as e:
     MODULES_OK = False
-    st.error(f"Import error: {e}. Make sure all model files are in the same directory.")
+    st.error(f"Import error: {e}. Make sure nba_fetcher.py, player_fetcher.py, and nba_model.py are in the same directory.")
+
+# ── Vegas lines — optional, app runs fine without it ────────────────────────
+try:
+    from odds_fetcher import fetch_vegas_lines, match_vegas_to_game
+    ODDS_OK = True
+except ImportError:
+    ODDS_OK = False
+    def fetch_vegas_lines():
+        return __import__("pandas").DataFrame()
+    def match_vegas_to_game(r: dict, vegas_df) -> dict:
+        """Passthrough stub — no Vegas lines available until odds_fetcher.py is added."""
+        r.setdefault("vegas_spread", None)
+        r.setdefault("vegas_total",  None)
+        r.setdefault("vegas_fav",    None)
+        r.setdefault("edge_score",   None)
+        r.setdefault("spread_edge",  None)
+        r.setdefault("sides_agree",  None)
+        return r
 
 CENTRAL = ZoneInfo("America/Chicago")
 
@@ -507,6 +524,14 @@ with st.sidebar:
         st.rerun()
 
     st.markdown("---")
+    if not ODDS_OK:
+        st.markdown(
+            "<span style='font-size:0.72rem;color:#f0a429;'>📡 <b>Vegas lines:</b> not connected — "
+            "add <code>odds_fetcher.py</code> to enable edge scoring</span>",
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown("<span style='font-size:0.72rem;color:#5ddc7a;'>📡 Vegas lines: connected</span>", unsafe_allow_html=True)
     st.markdown("<span style='font-size:0.72rem;color:#4a6fa5;'>Player data: on/off splits + live injury report<br>Lineup adjustments applied automatically</span>", unsafe_allow_html=True)
 
 
