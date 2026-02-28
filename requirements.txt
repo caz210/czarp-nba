@@ -1,0 +1,23 @@
+# CZarp NBA/WNBA Model — Python Dependencies
+# Install: pip install -r requirements.txt
+
+# ── Core ─────────────────────────────────────────────────────────────────────
+streamlit>=1.32.0
+pandas>=2.0.0
+requests>=2.31.0
+
+# ── NBA Stats API wrapper (optional but recommended) ─────────────────────────
+# Wraps the same endpoints as nba_fetcher.py with cleaner error handling
+# nba_api>=1.4.1
+
+# ── PDF parsing for official NBA injury report (optional) ────────────────────
+# Required only if you switch from ESPN injury API to parsing the official NBA PDF
+# pdfplumber>=0.10.0
+
+# ── Timezone support (Python 3.8 fallback) ───────────────────────────────────
+# Only needed if running Python < 3.9
+# backports.zoneinfo; python_version < "3.9"
+
+# ── Dev / debug ───────────────────────────────────────────────────────────────
+# openpyxl>=3.1.0       # For debug Excel output via debug_logger.py
+# xlsxwriter>=3.1.0     # Alternative Excel writer
